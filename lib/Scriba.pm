@@ -3,13 +3,11 @@ package Scriba;
 use v5.16;
 use strict;
 use warnings;
-use Carp;
 use Encode qw(encode decode);
 use Term::ReadKey;
 use Unicode::Collate;
 use utf8;
 use open qw(:std :encoding(UTF-8));
-use Data::Printer;
 
 my $Collator = Unicode::Collate->new
   (normalization => undef, level => 1);

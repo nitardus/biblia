@@ -3,16 +3,45 @@ package Biblia;
 use v5.16;
 use strict;
 use warnings;
-use Carp;
 use Encode qw(encode decode);
 use FindBin qw($Bin);
 use File::Spec;
-use Data::Dumper;
-use Data::Printer;
 use Term::ReadKey;
 use utf8;
 use open qw(:std :encoding(UTF-8));
 
+=head1 NAME
+
+Biblia - read the Holy Scripture in the command line
+
+=head1 VERSION  Version 0.1
+
+=cut
+
+our $VERSION = 0.1;
+
+=head1 SYNOPSIS
+
+This module fives you access to various bible files in a special tsv
+format. It searches for a specific portuob if text an returns it. It
+should be uses together with the Scriba module, which formats the text
+and returns it line by line.
+
+It comes with three bibles included: The Greek SBL text {sbl}, the Latin Clementine Vulgate {vul} and zhe King James Version (sbl).
+
+   use Biblia;
+   use Scriba;
+
+   $biblia = Biblia->tolle( editio => 'sbl' ) # default
+   @list_of_books = $biblia->enumera();
+   $lectio = $biblia->lege('Luke', '13:12');
+   push @lectio, @lectones;
+
+   my $scriba = Scriba->accede();
+   $scriba->audi(@lectiones)
+   $scriba->exscribe(5);
+   $scriba->exscribe();
+=cut
 
 (my $terminal_width) = GetTerminalSize();
 $terminal_width = $terminal_width - 5;
@@ -20,7 +49,7 @@ $terminal_width = 20 if $terminal_width < 20;
 
 my %defaults =
   ( editio  => 'grb',
-    path    => File::Spec->catdir($Bin, '..', 'data'),
+    path    => '',
     suffix  => 'tsv'
   );
 
@@ -33,6 +62,7 @@ sub tolle {
   $args{ validate($_) } = $passed{$_} for keys %passed;
   %{ $self } = ( %{ $self }, %defaults, %args );
   # %{ $self } = ( %{ $self }, %defaults, $self->read_configuration, %args );
+  $self->get_path();
   $self->read_index();
   return $self;
 }
@@ -109,6 +139,30 @@ sub validate {
   $key =~ s/-?(\w+)/\L$1/;
   return $key if exists $defaults{$key};
   die ("Configuration error in parameter: $key\n");
+}
+
+sub get_path {
+  my $self  = shift;
+  my @paths = (
+	       File::Spec->catdir($Bin, '..', 'data'),
+	       File::Spec->catdir($ENV{HOME}, '.config', 'Biblia'),
+	       File::Spec->catdir($ENV{HOME}, '.Biblia')
+	      );
+  unshift @paths, $ENV{BIBLIA_PATH} if $ENV{BIBLIA_PATH};
+  do { return if $self->validate_path() }
+    while ( $self->{path} = shift @paths );
+  say STDERR "Cannot find $self->{editio}: Please enter the path:";
+  chomp( $self->{path} = <STDIN> );
+  return if $self->validate_path();
+  die "Invalid path $self->{path}!\n";
+}
+
+sub validate_path {
+  my $self = shift;
+  my $path = $self->{path} || return 0;
+  my $filename = "$self->{editio}.$self->{suffix}";
+  my $file = File::Spec->catfile($path, $filename);
+  return (-d $path && -e $file) ? 1 : 0;
 }
 
 sub parse_locus {
@@ -221,5 +275,24 @@ sub maximum {
   $max < $_ and $max = $_ for @_;
   return $max;
 }
+
+=head1 AUTHOR
+
+Michael Neidhart, C<< <mayhoth at gmail.com> >>
+
+=head1 BUGS
+
+A lot, probably!
+
+=head1 SUPPORT
+
+You can find documentation for this module with the perldoc command.
+perldoc Biblia ...
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2024 Michael Neidhart.
+
+=cut
 
 1;

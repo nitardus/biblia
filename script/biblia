@@ -1,17 +1,14 @@
 #! /usr/bin/perl
 use v5.16;
 use strict; use warnings;
-use utf8;
-use open qw( :std :encoding(UTF-8) );
-use Term::ReadKey;
-use Unicode::Collate;
-our $Collator = Unicode::Collate->new
-  (normalization => undef, level => 1);
 use FindBin qw($Bin);
 use File::Spec;
+use Term::ReadKey;
 use lib File::Spec->catdir($Bin, '..', 'lib');
 use Biblia;
 use Scriba;
+use utf8;
+use open qw( :std :encoding(UTF-8) );
 
 my ($terminal_width, $terminal_height) = GetTerminalSize();
 my $lines = $ENV{BIBLIA_LINES} ? $ENV{BIBLIA_LINES} : $terminal_height -= 4;

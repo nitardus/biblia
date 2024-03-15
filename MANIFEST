@@ -1,0 +1,19 @@
+Build.PL
+Changes
+data/grb.tsv
+data/kjv.tsv
+data/vul.tsv
+lib/Biblia.pm
+lib/Scriba.pm
+MANIFEST			This list of files
+MANIFEST.SKIP
+META.json
+META.yml
+README.md
+script/biblia
+t/00-load.t
+t/manifest.t
+xt/pod-coverage.t
+t/pod.t
+t/boilerplate.t
+LICENSE
