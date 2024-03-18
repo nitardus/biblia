@@ -4,4 +4,6 @@ Revision history for Biblia
         First version, released on an unsuspecting world.
 0.02    Minor bugfixes in search functions
 0.03    Backwards movement and versewise movement, Luther and Elberfelder Bible, utility scripts for conversion of bible files added
+        New (=Latin) book abbreviations
+0.04    Added the wlc Old Testament, updated doumentation
 

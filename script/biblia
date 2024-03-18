@@ -139,7 +139,11 @@ EOT
 
 sub parse_argv {
 
-  unless (@ARGV) { print_help(); exit 0 }
+  unless (@ARGV) { say "You must specify a book! Availible books:";
+		   list_books(@ARGV);
+		   say "\nFor help on the usage, type 'biblia -h'";
+		   exit 0
+		 }
   while  (@ARGV) {
     local $_ = shift @ARGV;
     if    (/^-[hlip]{2,}/) { die "Command line arguments $_ cannot be combined!\n" }

@@ -5,6 +5,7 @@ data/elb.tsv
 data/kjv.tsv
 data/vul.tsv
 data/luth.tsv
+data/wlc.tsv
 lib/Biblia.pm
 lib/Biblia/Lector.pm
 lib/Biblia/Scriba.pm
@@ -14,6 +15,7 @@ META.json
 META.yml
 README.md
 script/biblia
+TODO.org
 t/00-load.t
 t/manifest.t
 utils/make_abbrev.pl

@@ -10,11 +10,11 @@ use Biblia::Scriba;
 
 Biblia - read the Holy Scripture in the command line
 
-=head1 VERSION  Version 0.3
+=head1 VERSION  Version 0.4
 
 =cut
 
-our $VERSION = 0.03;
+our $VERSION = 0.04;
 
 =head1 SYNOPSIS
 

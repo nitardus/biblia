@@ -45,10 +45,15 @@ if    (@ARGV == 1) {
 elsif (@ARGV == 2) {
   my $abbrev_file = shift @ARGV;
   my %abbrevs;
+  my %processed;
   open my $fh, '<', $abbrev_file or die "Cannot open $abbrev_file: $!\n";
   while (<$fh>) {
     chomp;
     my ($key, $name, $abbrev) = split /\t+|\s{3,}/;
+    not $key    and die "No name defined for $key!\n";
+    not $abbrev and die "No abbreviation defined for $name ($key)!\n";
+    exists $processed{$abbrev} and die "Duplicate abbreviation $abbrev for $processed{$abbrev} and $name!\n";
+    $processed{$abbrev} = $name;
     $abbrevs{$key} = [$name, $abbrev];
   }
   close $fh;

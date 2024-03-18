@@ -1,0 +1,10 @@
+- handling of .alias files: locale specific files, which mask the
+  abbreviations used by the bible files
+- loading a bible book by book, if no book is specified on the command line.
+  in this mode, searches skip over book bondaries. Possible syntax
+
+  biblia grb vul
+
+  biblia Mt 2 - Ioh 12:13
+
+  
