@@ -2,4 +2,6 @@ Revision history for Biblia
 
 0.01    Date/time
         First version, released on an unsuspecting world.
+0.02    Minor bugfixes in search functions
+0.03    Backwards movement and versewise movement, Luther and Elberfelder Bible, utility scripts for conversion of bible files added
 

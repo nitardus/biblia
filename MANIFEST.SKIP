@@ -3,6 +3,9 @@
 \#          # ignore CVS old revision files and emacs temp files
 ^MYMETA\.yml$
 ^MYMETA\.json$
+^work_in_progress
+^old_bibles
 ^.git
 ^_build
 \.idx$
+\.abbrev$

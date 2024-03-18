@@ -15,6 +15,12 @@ my $data_path = ( -d File::Spec->catdir($ENV{HOME}, '.config') )
 say STDERR "Creating directory for bibles to install: $data_path";
 File::Path::mkpath($data_path, 0, oct(777));
 
+chdir 'data';
+my @tsv_files = glob '*.tsv';
+chdir '..';
+my %tsv_files = map { "data/".$_ => "data/".$_ } @tsv_files;
+say "Found bibles ", join ' ', keys %tsv_files;
+
 my $builder = Module::Build->new
   (
    module_name        => 'Biblia',
@@ -24,10 +30,7 @@ my $builder = Module::Build->new
    release_status     => 'stable',
    create_license     => 1,
    script_files       => 'script/biblia',
-   tsv_files          => { 'data/grb.tsv' => 'data/grb.tsv',
-			   'data/vul.tsv' => 'data/vul.tsv',
-			   'data/kjv.tsv' => 'data/kjv.tsv',
-			 },
+   tsv_files          => \%tsv_files,
    install_path       => { data => $data_path },
    configure_requires => {
 			  'Module::Build' => '0.4004',

@@ -6,12 +6,11 @@ use File::Spec;
 use Term::ReadKey;
 use lib File::Spec->catdir($Bin, '..', 'lib');
 use Biblia;
-use Scriba;
 use utf8;
 use open qw( :std :encoding(UTF-8) );
 
 my ($terminal_width, $terminal_height) = GetTerminalSize();
-my $lines = $ENV{BIBLIA_LINES} ? $ENV{BIBLIA_LINES} : $terminal_height -= 4;
+my $lines = $ENV{BIBLIA_LINES} ? $ENV{BIBLIA_LINES} : $terminal_height -= 1;
 
 # Parse command line arguments
 my @editiones;
@@ -21,28 +20,39 @@ my $mode  = -t STDIN && -t STDOUT ? 'i' : 'p';
 parse_argv();
 
 # Get the text into the buffer
+my $rootdir = File::Spec->catdir($Bin, '..');
 for my $editio (@editiones) {
-  my $biblia = Biblia->tolle(editio => $editio);
+  my $biblia = Biblia::Lector->tolle(editio => $editio, path => $rootdir);
   die "You must specify a book!\n" unless $liber;
   push @lectiones, $biblia->lege($liber, $locus);
 }
 
 # Format the text
-my $scriba = Scriba->accede();
+my $scriba = Biblia::Scriba->accede();
 $scriba->audi(@lectiones);
 
 # Main loop
-if    ($mode eq 'p') { $scriba->exscribe() }
+if    ($mode eq 'p') { $scriba->exscribe_lineas() }
 elsif ($mode eq 'i') {
   ReadMode 3;
   my $k = " ";
   while (1) {
-    if    ($k eq " ")  { print $scriba->exscribe($lines) // last }
-    elsif ($k eq "\n") { print $scriba->exscribe(1) // last }
-    elsif ($k eq "/")  { search("/") }
-    elsif ($k eq "?")  { search("?") }
-    elsif ($k eq "n")  { set_lines() }
-    elsif ($k eq "q")  { exit 0 }
+    local $_ = $k;
+    my $n = 1;
+    if (/([+\d])/) { ($n, $_) = get_n($1) }
+
+    if    (/[ f]/ ) { print $scriba->exscribe_lineas($lines*$n)  // last }
+    elsif (/[b]/ )  { $scriba->revolve(2*$lines*$n);
+		      print $scriba->exscribe_lineas($lines*$n)  // last }
+    elsif (/[\nk]/) { print $scriba->exscribe_lineas($n)         // last }
+    elsif (/[j]/ )  { $scriba->revolve($lines + $n);
+		      print $scriba->exscribe_lineas($lines)     // last }
+    elsif (/[n]/  ) { print $scriba->exscribe_versus($n)         // last }
+    elsif (/[p]/  ) { print $scriba->exscribe_versus(-$n)        // last }
+    elsif (/[\/]/ ) { search("/") }
+    elsif (/[?]/  ) { search("?") }
+    elsif (/[N]/  ) { set_lines() }
+    elsif (/[q]/  ) { exit 0 }
     last if $scriba->{finis};
     $k = ReadKey 0;
   }
@@ -50,6 +60,18 @@ elsif ($mode eq 'i') {
 else { die "Mode not set!\n" }
 
 END { ReadMode 0 }
+
+sub get_n {
+  my $n = shift || '';
+  my $k;
+  while ($k = ReadKey 0) {
+    last unless $k =~ /\d/;
+    $n .= $k;
+  }
+  $n = -1 if $n eq '-';
+  $n =  1 if $n eq '+';
+  return ($n, $k)
+}
 
 #----------------------------------------------------------------
 ### Function definitions
@@ -63,6 +85,8 @@ USAGE: kjv [flags] [reference...] [editions...]
 Flags;
   -A num  show num verses of context after matching verses [not implemented]
   -B num  show num verses of context before matching verses [not implemented]
+  -i      interactive mode
+  -p      print mode: dumps all of the requested output to STDOUT
   -l      list books
   -h      show help
 
@@ -86,10 +110,35 @@ Reference:
         All verses in a book that match a pattern
     <Book>:<Chapter>/<Search>
         All verses in a chapter of a book that match a pattern;
+
+Navigating:
+    <q>
+        Exit program       [quit]
+    <ENTER>
+    <k>
+        One line forward
+    <j>
+        One line backward
+    <SPACE>
+    <f>
+        One page forward   [forward]
+    <b>
+        One page backward  [back]
+    <n>
+        One verse forward  [next]
+    <p>
+        One verse backward [previous]
+    </>
+        Search forward (diacritics insensitive)
+    <?>
+        Search backward (diacritics insensitive)
+    <N>
+        Set line height of page
 EOT
 }
 
 sub parse_argv {
+
   unless (@ARGV) { print_help(); exit 0 }
   while  (@ARGV) {
     local $_ = shift @ARGV;
@@ -110,7 +159,7 @@ sub list_books {
   my @editiones = @_ ? @_ : qw(grb);
   my @lists;
   for my $editio (@editiones) {
-    my $biblia = Biblia->tolle(editio => $editio);
+    my $biblia = Biblia::Lector->tolle(editio => $editio);
     my @list  = $biblia->enumera();
     my @abbrevs_list = map { $_->[0] } @list;
     my @names_list   = map { $_->[1] } @list;
@@ -157,10 +206,11 @@ sub search {
   my $input = <STDIN>;
   chomp $input;
   $input =~ s/^\s+(.*)\s+$/$1/;
-  $quaestio = $input if $input;
-  say STDERR $quaestio;
-  ReadMode 3;
-  print $scriba->quaere($liber, $dir, $quaestio);
+  if ($quaestio = $input ? $input : $quaestio) {
+    ReadMode 3;
+    print $scriba->quaere($dir, $quaestio);
+  }
+  else { warn "No previous search pattern!\n"; ReadMode 3 }
 }
 
 sub set_lines {

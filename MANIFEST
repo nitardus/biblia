@@ -1,10 +1,13 @@
 Build.PL
 Changes
 data/grb.tsv
+data/elb.tsv
 data/kjv.tsv
 data/vul.tsv
+data/luth.tsv
 lib/Biblia.pm
-lib/Scriba.pm
+lib/Biblia/Lector.pm
+lib/Biblia/Scriba.pm
 MANIFEST			This list of files
 MANIFEST.SKIP
 META.json
@@ -13,6 +16,8 @@ README.md
 script/biblia
 t/00-load.t
 t/manifest.t
+utils/make_abbrev.pl
+utils/BibleSuperSearch_csv2tsv.pl
 xt/pod-coverage.t
 t/pod.t
 t/boilerplate.t
