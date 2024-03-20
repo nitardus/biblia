@@ -39,10 +39,11 @@ my $builder = Module::Build->new
 		     'Test::More' => '0',
 		    },
    requires => {
-		'Encode'        => 0,
-		'FindBin'       => 0,
-		'File::Spec'    => 0,
-		'Term::ReadKey' => 0,
+		'Encode'           => 0,
+		'FindBin'          => 0,
+		'File::Spec'       => 0,
+		'Term::ReadKey'    => 0,
+		'Unicode::Collate' => 0,
 	       },
    add_to_cleanup     => [ 'Biblia-*' ],
   );

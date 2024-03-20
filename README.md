@@ -8,12 +8,32 @@ This project is a reimplementation of Luke Smith's command line bibles
 Install
 -------
 
-As this program is a perl distribution written with Module::Build, it installs by executing
+As this program is a perl distribution written with Module::Build, you first have to make sure that you have perl and  Module::Build. Try it by running
 
 	perl Build.PL
+
+If you haven't perl, install it through your system. If you haven't got Modul::Build, install it. The best way is to do this through your systems's package manager. On Debian based Linux distros, this would be done through
+
+	sudo apt install libmodule-build-perl
+	
+On RetHat:
+
+	sudo yum install perl-Module-Build
+	
+Arch:
+
+	sudo pacman -S perl-module-build
+	
+If all else fails, you can use cpan
+
+	cpan Module::Build
+	
+After having aquired Module::Build, you can proceed with the installation:
+
+	perl Build.PL  # if it didn't work the first time
 	./Build
 	./Build test
-	./Build install
+	sudo ./Build install
 	./Build clean
 
 Usage
