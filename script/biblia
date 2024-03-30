@@ -80,7 +80,7 @@ sub get_n {
 sub print_help {
 
   print <<EOT;
-USAGE: kjv [flags] [reference...] [editions...]
+USAGE: biblia [flags] [reference...] [editions...]
 
 Flags;
   -A num  show num verses of context after matching verses [not implemented]
