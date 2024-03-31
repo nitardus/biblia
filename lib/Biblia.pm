@@ -10,7 +10,7 @@ use Biblia::Scriba;
 
 Biblia - read the Holy Scripture in the command line
 
-=head1 VERSION  Version 0.5
+=head1 VERSION  Version 0.05
 
 =cut
 
