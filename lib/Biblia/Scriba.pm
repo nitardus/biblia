@@ -5,12 +5,10 @@ use strict;
 use warnings;
 use Encode qw(encode decode);
 use Term::ReadKey;
-use Unicode::Collate;
+use Unicode::Normalize;
 use utf8;
 use open qw(:std :encoding(UTF-8));
 
-my $Collator = Unicode::Collate->new
-  (normalization => undef, level => 1);
 (my $terminal_width) = GetTerminalSize();
 $terminal_width = $terminal_width - 5;
 $terminal_width = 20 if $terminal_width < 20;
@@ -190,6 +188,8 @@ sub revolve {
 sub quaere {
   my $self = shift;
   my ($dir, $quaestio) = @_;
+  $quaestio = strip_diacritics($quaestio);
+  $quaestio = qr/\Q$quaestio\E/;
   my $positio = $self->get_positio();
   my ($liber, $caput, $versus)  = @$positio;
 
@@ -217,7 +217,8 @@ sub quaere {
     my ($lib, $cap, $vers) = @$locus;
     for my $editio ( @{ $self->{lectiones} } ) {
       my $txt = $editio->{$lib}{$cap}{$vers};
-      if ( $Collator->index($txt, $quaestio) != -1 ) {
+      $txt = strip_diacritics($txt);
+      if ( $txt =~ $quaestio ) {
 	$self->{currens} = $self->{index}{$lib}{$cap}{$vers}[0];
 	return ($dir eq '?')
 	  ? $self->exscribe_versus(1,1)
@@ -341,6 +342,12 @@ sub get_positio {
   }
   @indices = ( @indices[$i..$#indices], @indices[0..$i-1] );
   return $self->{lineindex}{$indices[$offset]};
+}
+
+sub strip_diacritics {
+  my $txt = shift // return '';
+  my $decomposed = NFKD $txt;
+  $decomposed =~ s/\p{NonspacingMark}//gr;
 }
 
 sub numerically { $a <=> $b }

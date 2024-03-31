@@ -6,4 +6,4 @@ Revision history for Biblia
 0.03    Backwards movement and versewise movement, Luther and Elberfelder Bible, utility scripts for conversion of bible files added
         New (=Latin) book abbreviations
 0.04    Added the wlc Old Testament, updated doumentation
-
+0.05    Changed Unicode backend to Unicode::Normalize (can now possibly add regex support in searches
